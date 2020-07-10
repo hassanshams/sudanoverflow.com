@@ -1,0 +1,84 @@
+#not_sign_header a{font-size: 18px;}
+
+.container{border-left: 1px solid #e8e8e8;border-right: 1px solid #e8e8e8;padding-top: 30px;}
+a:hover{text-decoration: none;}
+.on_hover:hover{background-color: #e8e8e8;padding: 2px;cursor: pointer;border-radius: 3px;}
+pre{direction: ltr;}
+.tag{background-color: #e8e8e8;padding: 3px;border-radius: 3px;}
+.top_nav_link{font-size: 19px; margin-right: 10px;color: #7f7c7d;}
+.top_nav_link:hover{color: #009bff;}
+.active_link{color: #009bff;}
+
+#not_logged_msg{display: block;  position: absolute;  top: 40%;  right: 45%;  z-index: 10;background: #eff0f1;padding: 10px;border-radius: 5px;  box-shadow: 0 0 10px #197278;}
+#not_logged_msg a,#not_logged_msg span{display: block; text-align: center;}
+#close_not_logged_msg{cursor: pointer;}
+
+
+#p_bio{background-color: #f8f9fa;border-right: 5px solid #0a8289;padding-right: 10px;}
+#p_profile_pic{margin-left: auto;margin-right: auto;width: 100%;}
+#p_location_icon,#p_work_icon,#p_college_icon{height: 30px;display: inline-block;padding-bottom: 7px;margin-left: 4px;}
+#p_location,#p_job,#p_college{display: inline-block;}
+#p_points_icon{height: 25px;padding-bottom: 3px;display: inline-block;}
+#p_points{display: inline-block;}
+.votes_p_questions,.users_points{font-size: 20px;border: 1px solid #0a8289;border-radius: 2px;padding: 0px 3px 0px 3px;}
+.p_activity_container{border-bottom: 1px solid #d6d9dc;padding-bottom: 9px;margin-bottom: 10px;}
+
+
+.official_color{background-color: #197278;color: white;}
+
+
+.question_comment{border-bottom: 1px solid #d6d9dc;padding-bottom: 9px;margin-bottom: 10px;}
+.question{margin-bottom: 15px; padding: 10px;  border-top: 1px solid #e8e8e8;}
+.comment_row{border-top: 1px solid #e8e8e8;margin-top: 5px;padding: 3px 10px 3px 0px;}
+
+
+
+
+#guide_logo{height: 100px;width: 250px;display: block;margin: auto;}
+#g_editor,#g_tags,#g_code,#g_preview,#g_accept{margin-bottom: 20px;border: 1px solid #c8cbcf;width: 740px;}
+
+
+
+.users_pics{width: 80%;height: 60%;}.users_names{display: block;}
+
+
+#preview{direction: ltr; height: 400px;overflow: auto;border: 1px solid #cccccc;margin-top: 10px;padding: 10px;}
+.live_tag{display: inline-block;background-color: #007bff;padding: 2px;border-radius: 4px;margin: 5px auto 5px 5px;}
+.added_tag{background-color: #007bff;padding: 4px;border-radius: 4px;margin-right: 10px;}
+#remove_tag_x{color: white;margin-left: 3px;font-size: 17px;padding: 4px;}#remove_tag_x:hover{cursor: pointer;}
+#question_view_content{width: 660px;direction: ltr;}
+#q_question_view{direction: ltr;}
+#add_comment_area{display:none;}
+#q_votes_counter{display: block;font-size: 20px;text-align: center;}
+#vote_down_arrow,#vote_up_arrow{width: 30px;display: block ;margin: auto;}#vote_down_arrow,#vote_up_arrow:hover{cursor: pointer;}
+#answer_body{direction: ltr;}
+#answer_votes_counter{display: block;font-size: 18px;text-align: center;}
+#answer_vote_down_arrow,#answer_vote_up_arrow{width: 25px;display: block ;margin: auto;}
+#answer_vote_down_arrow,#answer_vote_up_arrow:hover{cursor: pointer;}
+#not_logged_in{display: none;position: absolute;z-index:2000; top: 30%;right: 45%;background-color: cornsilk;}
+.accept_answer_check,.accepted_answer_check{width: 25px;display: block ;margin: auto; font-size: 20px;}.accept_answer_check:hover{cursor: pointer;}
+#loaded_pic{width: 100%;height: 275px;margin-left: auto;margin-right: auto;display: block;}
+
+#inbox{position: absolute;right: 50%;top: 50px;height: 250px;}
+.navbar-light .navbar-nav .nav-link{font-size:20px;}
+#inbox_img{width: 40px;height: 30px;margin-top: 8px;}
+.user_lnks{margin-right: 600px;}
+#logo{width: 130px;height: 37px;}
+#login_btn{background-color: #197278;border-color: #197278;}
+#login_box,#signup_box{border: 1px solid #197278;border-radius: 10px;box-shadow: 0 0 10px #197278;}
+.login_icon{
+  font-size: 25px;
+padding: 10px;
+color: #197278;
+}
+#signup_box{padding-bottom: 20px;}
+#logo_on_login{width:200px;margin-left: auto;margin-right: auto;display: block;}
+#votes_and_stuff{color: #7c7c7d;}
+#bord_bott{border-bottom: 2px solid #7c7c7d;}
+#votes_count,#views_count,.answers_count{color: #007324;}
+#questions_view{border-top: 1px solid #7c7c7d;}
+.tag_style:hover,#q_title_style:hover{text-decoration: none;}
+
+
+
+/****phone style****/
