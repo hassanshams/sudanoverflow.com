@@ -1,3 +1,9 @@
+body{position: relative;
+padding-bottom: 200px;
+min-height: 100vh;
+}
+
+
 #not_sign_header a{font-size: 18px;}
 
 .container{border-left: 1px solid #e8e8e8;border-right: 1px solid #e8e8e8;padding-top: 30px;}
@@ -40,6 +46,12 @@ pre{direction: ltr;}
 
 
 .users_pics{width: 80%;height: 60%;}.users_names{display: block;}
+
+
+
+#footer{background-color: #242729;color: #0071d6;position: absolute;bottom: 0;width: 100%;}
+
+
 
 
 #preview{direction: ltr; height: 400px;overflow: auto;border: 1px solid #cccccc;margin-top: 10px;padding: 10px;}

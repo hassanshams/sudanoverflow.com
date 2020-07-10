@@ -389,9 +389,15 @@ class Question_model extends CI_Model{
         $this->db->query($sql);
         return true;
     }
-    // public function get_all_stats(){
-
-    // }
+    public function all_stats(){
+        $sql1=("select count(*) as questions from questions");
+        $sql2=("select count(*) as answers from answers");
+        $result = $this->db->query($sql1)->result();
+        $result2 = $this->db->query($sql2)->result();
+        $all = array();
+        array_push($all,$result,$result2);
+        return $all;
+    }
 
 }
 ?>

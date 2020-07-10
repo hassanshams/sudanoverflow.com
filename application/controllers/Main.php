@@ -7,16 +7,20 @@ class Main extends CI_Controller {
     }
 public function index(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $title='ريفو - تسجيل دخول';
         $this->load->view('header',array('nots'=>$nots,'title'=>$title));
         $this->load->view('login');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
 	}
     public function signup(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('signup');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function check_email(){
         $this->load->model('user_model');
@@ -99,16 +103,20 @@ public function index(){
     }
     public function account_recovery($email=null){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->model('user_model');
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('account_recovery');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function forgot_password(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('forgot_password');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function send_recovery_mail(){ 
         $email = $this->input->post('email');
@@ -150,6 +158,7 @@ public function check_recovery_token(){
 }
     public function profile(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $questions = $this->question_model->user_profile_questions();
         $nots = $this->question_model->get_notifications();
         $this->load->model('user_model');
@@ -158,6 +167,7 @@ public function check_recovery_token(){
         $id=$this->session->userdata('user_id');
         $user_info = $this->user_model->get_user_info($id);
         $this->load->view('profile',array('user_info'=>$user_info,'questions'=>$questions));
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function upload_profile_pic(){
         $this->load->model('user_model');
@@ -194,18 +204,22 @@ public function check_recovery_token(){
     }
     public function edit_profile(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->model('user_model');
         $id=$this->session->userdata('user_id');
         $user_info = $this->user_model->get_user_info($id);
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('edit_profile',array('user_info'=>$user_info));
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function login(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('login');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function validate_login(){
         $data = $this->input->post('data');
@@ -216,16 +230,13 @@ public function check_recovery_token(){
             echo json_encode('no');
         }
     }
-    public function signout(){
-        $this->session->unset_userdata('user');
-        $title='تسجيل دخول';
-        $this->load->view('header',array('title'=>$title));
-        $this->load->view('login');
-    }
     public function ask(){
+        $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $title='اضافة دواء جديد';
         $this->load->view('header',array('title'=>$title));
         $this->load->view('ask');
+        // $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function get_tags(){
         $tag = $this->input->post('tag');
@@ -242,6 +253,7 @@ public function check_recovery_token(){
     public function home($filter='recent'){
         $this->load->model('question_model');
         $nots = $this->question_model->get_notifications();
+        $all_stats = $this->question_model->all_stats();
         $recent_questions = $this->question_model->get_recent_questions();
         $most_votes_questions = $this->question_model->get_most_votes_questions();
         $most_answers_questions = $this->question_model->get_most_answers_questions();
@@ -249,19 +261,24 @@ public function check_recovery_token(){
         if($filter=='recent'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$recent_questions));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($filter == 'most-votes'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$most_votes_questions));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($filter == 'most-answers'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$most_answers_questions));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($filter == 'not-answered'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$not_answered_questions));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }
     }
     public function tag($tag,$filter=null){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $recent_questions_for_tag = $this->question_model->get_recent_questions_for_tag($tag);
         $most_votes_questions_for_tag = $this->question_model->get_most_votes_questions_for_tag($tag);
@@ -270,23 +287,29 @@ public function check_recovery_token(){
         if($filter=='recent'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$recent_questions_for_tag,'tag'=>$tag));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($filter == 'most-votes'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$most_votes_questions_for_tag,'tag'=>$tag));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($filter == 'most-answers'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$most_answers_questions_for_tag,'tag'=>$tag));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($filter == 'not-answered'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$not_answered_questions_for_tag,'tag'=>$tag));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else{
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$recent_questions_for_tag,'tag'=>$tag));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }
     }
     public function search(){
         $text = $this->input->post('text');
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $searched_recent_questions = $this->question_model->searched_recent_questions($text);
         $searched_most_votes_questions = $this->question_model->searched_most_votes_questions($text);
@@ -295,22 +318,28 @@ public function check_recovery_token(){
         if($text=='recent'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$searched_recent_questions,'searched_text'=>$text));
+            $this->load->view('footer',array('all_stats'=>$all_stats));             
         }else if($text == 'most-votes'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$searched_most_votes_questions,'searched_text'=>$text));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($text == 'most-answers'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$searched_most_answers_questions,'searched_text'=>$text));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else if($text == 'not-answered'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$searched_not_answered_questions,'searched_text'=>$text));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else{
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('home',array('questions'=>$searched_recent_questions,'searched_text'=>$text));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }
     }
     public function question($id){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->model('question_model');
         $id=$id/62488426;
@@ -320,9 +349,11 @@ public function check_recovery_token(){
         $answer_comments = $this->question_model->get_answer_comments($id);
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('question',array('question'=>$question,'comments'=>$comments,'answers'=>$answers,'answer_comments'=>$answer_comments));
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     } 
     public function user($id){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->model('user_model');
         $id=$id/62488426;
@@ -330,29 +361,35 @@ public function check_recovery_token(){
         $user_activity = $this->question_model->user_profile_activity($user_info[0]->email);
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('profile',array('user_info'=>$user_info,'user_activity'=>$user_activity));
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function tags(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $tags = $this->question_model->all_tags();
         $tag_questions = $this->question_model->tag_questions();
         $tag_answers = $this->question_model->tag_answers();
         $this->load->view('header',array('nots'=>$nots,'tags'=>$tags,'tag_questions'=>$tag_questions,'tag_answers'=>$tag_answers));
         $this->load->view('tags');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
 
     public function users($filter=null){
         $this->load->model('question_model');
         $this->load->model('user_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $recent_users = $this->user_model->recent_users();
         $most_points_users = $this->user_model->most_points_users();
         if($filter=='recent'){
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('users',array('users'=>$recent_users));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }else{
             $this->load->view('header',array('nots'=>$nots));
             $this->load->view('users',array('users'=>$most_points_users));
+            $this->load->view('footer',array('all_stats'=>$all_stats));
         }
     }
     public function add_comment(){
@@ -563,9 +600,11 @@ public function check_recovery_token(){
     }
     public function guide(){
         $this->load->model('question_model');
+        $all_stats = $this->question_model->all_stats();
         $nots = $this->question_model->get_notifications();
         $this->load->view('header',array('nots'=>$nots));
         $this->load->view('guide');
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     } 
     public function logout(){
         $this->session->unset_userdata('user');
