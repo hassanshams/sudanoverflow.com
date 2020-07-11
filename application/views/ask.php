@@ -1,32 +1,29 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?>
-<!DOCTYPE HTML>
-<html>
-  <head>
+ <body style="margin: 0;"></body>
+ <head>
     <link rel='stylesheet' href='<?php echo base_url() ; ?>/style/skin.min.css'>
     <link rel='stylesheet' href='<?php echo base_url() ; ?>/style/content.min.css'>
     <script src='<?= base_url() ?>js/tinymce.min.js'></script>
     <script src='<?= base_url() ?>js/theme.min.js'></script>
   </head>
-<body>
 <div class="container">
+  <div class="row">
     <div class="col-md-8">
-         <div class="form-group">
-            <input type="text" name="question_title" id="question_title" class="form-control" placeholder="العنوان">
-              </div>         
-              <div class="form-group col-sm-3">
-            <input type="text" id="question_tags" name="question_tags" class="form-control" placeholder="الاقسام">
-                  <div id="tags" style="background-color:whitesmoke"></div>
-              </div>
-            <div class="form-group col-sm-9">
-              <div id="tag" name="tag" class="form-control"></div> 
-            </div>
-            <textarea id='question_editor' name="question_editor">محتوي السوال</textarea>
-        <br><div id="preview"></div><br>
-            <button id="add_question" name="add_question" class="btn btn-primary btn-lg btn-block check_login">اسال</button> <br>
+      <div class="form-group">
+        <input type="text" name="question_title" id="question_title" class="form-control" placeholder="العنوان">
+      </div>         
+      <div class="form-group col-sm-3">
+        <input type="text" id="question_tags" name="question_tags" class="form-control" placeholder="الاقسام">
+        <div id="tags" style="background-color:whitesmoke"></div>
+      </div>
+      <div class="form-group col-sm-9">
+        <div id="tag" name="tag" class="form-control"></div> 
+      </div>
+      <textarea id='question_editor' name="question_editor">محتوي السوال</textarea>
+      <br><div id="preview"></div><br>
+      <button id="add_question" name="add_question" class="btn btn-primary btn-lg btn-block check_login">اسال</button> <br>
     </div>
-    </div>
+  </div>
+</div>
 <script>
 $(document).ready(function(){
     var insert_id = '';
@@ -92,7 +89,7 @@ document.getElementById('tags').addEventListener('click', function(e) {
           async:false,
           data:{question_data:question_data},
           success:function(reply){
-            //   window.location="<?php echo base_url('main/question/');?>"+reply*62488426;
+              window.location="<?php echo base_url('main/question/');?>"+reply*62488426;
           }
       });
   });  
@@ -109,5 +106,3 @@ document.getElementById('tags').addEventListener('click', function(e) {
   });
 });
   </script>
-</body>
-</html>

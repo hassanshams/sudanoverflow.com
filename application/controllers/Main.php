@@ -236,7 +236,7 @@ public function check_recovery_token(){
         $title='اضافة دواء جديد';
         $this->load->view('header',array('title'=>$title));
         $this->load->view('ask');
-        // $this->load->view('footer',array('all_stats'=>$all_stats));
+        $this->load->view('footer',array('all_stats'=>$all_stats));
     }
     public function get_tags(){
         $tag = $this->input->post('tag');

@@ -8,7 +8,7 @@
     <script src='<?= base_url() ?>js/tinymce.min.js'></script>
     <script src='<?= base_url() ?>js/theme.min.js'></script>
   </head>
-<body>
+<body style="margin:0">
 <div style="display:none" id="q_id"><?php echo $question->id;?></div> 
 <div style="display:none" id="q_tags"><?php echo $question->tags;?></div>
 <div class="container">

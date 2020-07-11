@@ -11,7 +11,7 @@
     <script src='<?php echo base_url() ; ?>/js/dropzone.js'></script>
     <link rel='stylesheet' href='<?php echo base_url() ; ?>/style/style.css'>
     <link rel='stylesheet' href='<?php echo base_url() ; ?>/style/dropzone.css'>
-    <!-- <script src="https://kit.fontawesome.com/1b58859525.js" crossorigin="anonymous"></script> -->
+    
 	<meta charset="utf-8">
         <title></title>
     <div style="display:none" id="user"><?php echo $this->session->userdata('user');?></div>
@@ -45,7 +45,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav">
-      <li class="nav-item active">
+      <li class="nav-item">
       <a class="nav-item nav-link " id="home_top_nav" href="<?php echo base_url('main/home'); ?>">الرئيسية</a>  
       </li>
       <li class="nav-item ">
@@ -243,8 +243,14 @@ if(window.location.href == "https://localhost/sudanoverflow.com/main/users"){
 if(window.location.href == "https://localhost/sudanoverflow.com/main/guide"){
   $('#guide_top_nav').css('color','#009bff');
 }
-if(window.location.href.match("https://localhost/sudanoverflow.com/main/tag/",/\+./)){
+if(window.location.href.match("https://localhost/sudanoverflow.com/main/tag",/\+./)){
   $('#tags_top_nav').css('color','#009bff');
+}
+if(window.location.href.match("https://localhost/sudanoverflow.com/main/home",/\+./)){
+  $('#home_top_nav').css('color','#009bff');
+}
+if(window.location.href.match("https://localhost/sudanoverflow.com/main/user",/\+./)){
+  $('#users_top_nav').css('color','#009bff');
 }
 
 
