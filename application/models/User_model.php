@@ -41,6 +41,15 @@ public function check_recovery_token($email,$token){
         return false;
     }
 }
+public function change_password($password,$email){
+    $password = md5($password);
+    $sql=("update users set password='$password' where email='$email'");
+    if($this->db->query($sql)){
+        return true;
+    }else{
+        return false;
+    }
+}
 public function check_activation_token($token){
     $sql=("select token,activated from users where token='$token' and activated='0'");
     if($this->db->query($sql)->num_rows() > 0){

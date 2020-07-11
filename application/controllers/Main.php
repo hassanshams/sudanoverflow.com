@@ -134,7 +134,7 @@ public function index(){
             $this->email->set_newline("\r\n");
             $this->email->from('hassanshams43@gmail.com', 'from:sudanoverflow team');
             $this->email->to($email);
-            $this->email->subject('password recovery');
+            $this->email->subject('Password Recovery Code');
             $this->email->message($token);
             if ($this->email->send()) {
                 echo json_encode('ok');
@@ -156,8 +156,26 @@ public function check_recovery_token(){
         echo json_encode('no');
     }
 }
-    public function profile(){
-        $this->load->model('question_model');
+public function new_password(){
+    $this->load->model('question_model');
+    $all_stats = $this->question_model->all_stats();
+    $this->load->view('header');
+    $this->load->view('new_password');
+    $this->load->view('footer',array('all_stats'=>$all_stats));
+}   
+public function change_password(){
+    $this->load->model('user_model');
+    $data = $this->input->post('data');
+    $password = $data[0];
+    $email = $data[1];
+    if($this->user_model->change_password($password,$email)){
+        echo json_encode('ok');
+    }else{
+        echo json_encode('not');
+    }
+}
+public function profile(){
+    $this->load->model('question_model');
         $all_stats = $this->question_model->all_stats();
         $questions = $this->question_model->user_profile_questions();
         $nots = $this->question_model->get_notifications();

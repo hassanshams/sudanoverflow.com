@@ -43,7 +43,7 @@
                   <br>
                   <div>
                     <a class="float-right" href="<?php echo base_url('main/forgot_password');?>">نسيت كلمة المرور ؟</a>
-                    <a href="<?php echo base_url('main/signup');?>">ليس لديل حساب ؟</a>
+                    <a href="<?php echo base_url('main/signup');?>">ليس لديك حساب ؟</a>
                   </div>
                   <br>
                 <div class="text-center">®Powered By Revo Tech</div>
