@@ -21,6 +21,8 @@
       <textarea id='question_editor' name="question_editor">محتوي السوال</textarea>
       <br><div id="preview"></div><br>
       <button id="add_question" name="add_question" class="btn btn-primary btn-lg btn-block check_login">اسال</button> <br>
+      <div class="float-right" id="went_wrong" style="display:none">حدث خطأ ما حاول مرة اخري!</div>
+      <div class="float-right" id="empty_feild" style="display:none">الرجاء ملئ كل الحقول!</div>
     </div>
   </div>
 </div>
@@ -81,7 +83,11 @@ document.getElementById('tags').addEventListener('click', function(e) {
           question_tags.push(tag); 
       });
       question_data.push(question_title,question_tags,question_content);
-      if(!question_title || question_tags.length==0 || !question_content){alert('fill all required felids ');return false;}
+      if(!question_title || question_tags.length==0 || !question_content){
+        $('#empty_feild').css('display','block');
+        $("#empty_feild").delay(4000).hide(0);      
+        return false;
+        }
       $.ajax({
           url:"<?php echo base_url();?>main/add_question",
           method:'POST',
@@ -89,7 +95,13 @@ document.getElementById('tags').addEventListener('click', function(e) {
           async:false,
           data:{question_data:question_data},
           success:function(reply){
+             console.log(reply);
+            if(reply != 'not'){
               window.location="<?php echo base_url('main/question/');?>"+reply*62488426;
+            }else{
+              $('#went_wrong').css('display','block');
+              $("#went_wrong").delay(4000).hide(0);      
+            }
           }
       });
   });  

@@ -1,4 +1,4 @@
-accepted answer:5
+accepted answer:10
 accepted answer vote:vote count*5
 question vote:1
 62488426 = q_a_u id's

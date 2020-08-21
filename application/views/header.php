@@ -11,7 +11,9 @@
     <script src='<?php echo base_url() ; ?>/js/dropzone.js'></script>
     <link rel='stylesheet' href='<?php echo base_url() ; ?>/style/style.css'>
     <link rel='stylesheet' href='<?php echo base_url() ; ?>/style/dropzone.css'>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet"> 
+
+
 	<meta charset="utf-8">
         <title></title>
     <div style="display:none" id="user"><?php echo $this->session->userdata('user');?></div>
@@ -42,7 +44,6 @@
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -83,18 +84,24 @@
         <a id="notifi_box" class="nav-link dropdown-toggle" style="display:none" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">    
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <?php if(isset($nots)){foreach($nots as $not): ?>
+        <?php if(isset($nots)){foreach($nots as $not){ ?>
             <?php if($not->type=='accepted'){
             echo '<a class="dropdown-item" id="link" href='.base_url('main/question/').$not->link_.'#'.$not->section.'> تم قبول اجابتك بواسطة'.' '.$not->from_.'</a>'.'<input type="hidden" value='.$not->id.'>';
-            }if($not->type=='answered'){
+            }else if($not->type=='answered'){
             echo '<a class="dropdown-item" id="link" href='.base_url('main/question/').$not->link_.'#'.$not->section.'> تمت الاجابة بواسطة  '.' '.$not->from_.'</a>'.'<input type="hidden" value='.$not->id.'>';
-            }else if($not->type=='commented'){$not->section=$not->section*16;
+            }else if($not->type=='commented'){
+              $not->section=$not->section*16;
             echo '<a class="dropdown-item" id="link" href='.base_url('main/question/').$not->link_.'#'.$not->section.'> تم اضافة تعليع بواسطة'.' '.$not->from_.'</a>'.'<input type="hidden" value='.$not->id.'>';
-            }else if($not->type=='answer_commented'){$not->section=$not->section*17;
-            echo '<a class="dropdown-item" id="link" href='.base_url('main/question/').$not->link_.'#'.$not->section.'>تم اضافة تعليق علي اجابتك بواسطة'.' '.$not->from_.'</a>'.'<input type="hidden" value='.$not->id.'>';
+            }else if($not->type=='answer_commented'){
+              $not->section=$not->section*17;
+            echo '<a class="dropdown-item" id="link" href='.base_url('main/question/').$not->link_.'#'.$not->section.'>تم اضافة تعليق علي اجابة بواسطة'.' '.$not->from_.'</a>'.'<input type="hidden" value='.$not->id.'>';
+            }else if($not->type=='question_voted'){
+              $not->section=$not->section*17;
+            echo '<a class="dropdown-item" id="link" href='.base_url('main/question/').$not->link_.'#'.$not->section.'>تم التصويت علي سؤالك بواسطة'.' '.$not->from_.'</a>'.'<input type="hidden" value='.$not->id.'>';
             }
-            ?>
-            <?php endforeach;}?>
+          }
+        }
+          ?>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="<?php echo base_url('main/user/').$this->session->userdata('user_id')*62488426;?>">عرض الكل </a>
         </div>
@@ -292,6 +299,26 @@ if(window.location.href == "https://localhost/sudanoverflow.com/main/search"){
   $('#home_nav').css('display','none'); 
   $('#tag_nav').css('display','none'); 
 }
+
+
+
+$('body').on('click','#link',function(){
+    var id = $(this).next().val();
+    var url = $(this).attr('href');
+   $.ajax({
+       url:"<?php echo base_url();?>main/seen_link",
+       method:"POST",
+       dataType:"json",
+       data:{id:id},
+       async:false,
+       success:function(response){
+          if(response == "seen"){
+            window.location = url;
+            }
+       }
+   });
+ }); 
+
 
 
 });

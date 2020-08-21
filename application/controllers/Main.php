@@ -265,8 +265,12 @@ public function profile(){
     public function add_question(){
         $this->load->model('question_model');
         $data = $this->input->post('question_data');
-        $insert_id = $this->question_model->add_question($data);
-        echo json_encode($insert_id);
+        $id = $this->question_model->add_question($data);
+        if($id != false){
+            echo json_encode($id);
+        }else{
+            echo json_encode('not');
+        }
     }
     public function home($filter='recent'){
         $this->load->model('question_model');
@@ -418,13 +422,12 @@ public function profile(){
             $section=$q_id;
             $link=$q_id*62488426;
             $user=$this->session->userdata('user');
-            if($this->question_model->make_notifications($user,'commented',$section,$q_id,$link,$insert_id) == true){
+            if($this->question_model->make_notifications($user,'commented',$section,$q_id,$link,$insert_id) === true){
                 echo json_encode('commented');
             }else{
                 echo json_encode('no');
             }
-        }
-        
+        }    
     } 
     public function add_answer_comment(){
         $data = $this->input->post('data');
@@ -434,9 +437,13 @@ public function profile(){
             $qu_owner=$data[3];
             $link=$q_id*62488426;
             $section=$data[2];
+            $answer_id=$data[2];
             $user = $this->session->userdata('user');
-            $this->question_model->make_notifications($user,'answer_commented',$section,$q_id,$link,$answer_comment_id);
-            echo json_encode('added');
+            if($this->question_model->make_notifications($user,'answer_commented',$section,$q_id,$link,$answer_comment_id,$answer_id)){
+                echo json_encode('added');
+            }else{
+                echo json_encode('not');
+            }
         }
     }   
     public function get_answer_comments(){
@@ -457,58 +464,76 @@ public function profile(){
         $result = $this->question_model->has_voted($q_id);
         if($result){
             echo json_encode('voted');
-        }else{echo json_encode('not voted');}
+        }else{
+            echo json_encode('not voted');
+        }
     }
     public function add_vote(){
         $data = $this->input->post('data');
+        $from = $this->session->userdata('user');
+        $section = $data[0];
+        $q_id = $data[0];
+        $link = $data[0]*62488426;
         $this->load->model('question_model');
-        $q_id = $this->question_model->add_vote($data);
-        $this->question_model->add_q_vote_points($data);
+        $id = $this->question_model->add_vote($data);
+        $delete_id = $id;
+        if($id == false){
+            echo json_encode('went wrong');
+            return;
+        }else if($this->question_model->make_notifications($from,'question_voted',$section,$q_id,$link,$delete_id) == true){
+            echo json_encode($id);
+        }else{
+            echo json_encode("not");
+        }
     }
     public function if_q_owner(){
         $q_id = $this->input->post('q_id');
         $this->load->model('question_model');
         if($this->question_model->check_q_owner($q_id)){
             echo json_encode('owner');
-        }else{echo json_encode('not');}
+        }else{
+            echo json_encode('not');
+        }
     }    
     public function delete_question(){
         $q_id = $this->input->post('q_id');
         $this->load->model('question_model');
         if($this->question_model->delete_question($q_id)){
-            $this->question_model->delete_notifications('question',$q_id);
             echo json_encode('deleted');
         }
-        else{echo json_encode('not');}
+        else{
+            echo json_encode('not');
+        }
     } 
     public function delete_answer(){
         $data = $this->input->post('data');
         $answer_id=$data[0];
         $this->load->model('question_model');
         if($this->question_model->delete_answer($data)){
-            $this->question_model->delete_notifications('answer',$answer_id);
             echo json_encode('deleted');
         }
-        else{echo json_encode('not');}
+        else{
+            echo json_encode('not');
+        }
     } 
     public function delete_answer_comment(){
         $data = $this->input->post('data');
         $this->load->model('question_model');
         if($this->question_model->delete_answer_comment($data)){
-            $comment_id=$data[1];
-            $this->question_model->delete_notifications('answer_comment',$comment_id);
             echo json_encode('deleted');
+        }else{
+            echo json_encode('not');
         }
-        else{echo json_encode('not');}
     }
     public function delete_comment(){
         $comment_id = $this->input->post('comment_id');
+        $q_id = $this->input->post('q_id');
         $this->load->model('question_model');
-        if($this->question_model->delete_comment($comment_id)){
-            $this->question_model->delete_notifications('comment',$comment_id);
+        if($this->question_model->delete_comment($comment_id,$q_id)){
             echo json_encode('deleted');
+        }else{
+            echo json_encode('not');
         }
-        else{echo json_encode('not');}
     }
     public function edit_question($q_id){
         $this->load->model('question_model');
@@ -539,13 +564,21 @@ public function profile(){
     public function add_answer(){
         $this->load->model('question_model');
         $answer_data = $this->input->post('answer_data');
-        $insert_id = $this->question_model->add_answer($answer_data);
-        $q_id = $answer_data[0];
-        $qu_owner=$answer_data[3];
-        $link=$q_id*62488426;
-        $section=$insert_id;
-        $user = $this->session->userdata('user');
-        $this->question_model->make_notifications($user,'answered',$section,$q_id,$link,$insert_id);
+        $a_id = $this->question_model->add_answer($answer_data);
+        if($a_id != false){
+            $q_id = $answer_data[0];
+            $qu_owner=$answer_data[3];
+            $link=$q_id*62488426;
+            $section=$a_id;
+            $user = $this->session->userdata('user');
+            if($this->question_model->make_notifications($user,'answered',$section,$q_id,$link,$a_id,$a_id) != false){
+                echo json_encode("ok");
+            }else{
+                echo json_encode("not");
+            }
+        }else{
+            echo json_encode("not");
+        }
     }
     public function if_answer_owner(){
         $this->load->model('question_model');
@@ -583,21 +616,30 @@ public function profile(){
     public function check_user_voted_answer(){
         $this->load->model('question_model');
         $answer_id = $this->input->post('answer_id');
-        if(!$this->question_model->check_user_voted_answer($answer_id)){
+        if($this->question_model->check_user_voted_answer($answer_id)){
+            echo json_encode('voted');
+        }else{
             echo json_encode('not');
-        }else{echo json_encode('voted');}
+        }
     }
-        public function answer_update_votes(){
+     public function answer_update_votes(){
+        $user = $this->session->userdata('user');
         $this->load->model('question_model');
         $answer_data = $this->input->post('answer_data');
         $answer_id = $answer_data[0];
+        $section = $answer_data[0];
         $vote = $answer_data[1];
         if($vote == 1){$down_up='up';}else if($vote == -1){$down_up='down';}
         $q_id = $answer_data[2];
+        $link=$q_id*62488426;
         $a_owner = $answer_data[3];
-        $this->question_model->answer_update_votes($answer_id,$vote,$q_id,$down_up);
-        $this->question_model->add_a_vote_points($answer_id,$q_id,$a_owner);
-    }
+        if($this->question_model->answer_update_votes_and_points($answer_id,$vote,$q_id,$down_up,$answer_id,$a_owner) && 
+        $this->question_model->make_notifications($user,'answer_voted',$answer_id,$q_id,$link,$section,$answer_id)) {
+            echo json_encode('ok');
+        }else{
+             echo json_encode('not');
+         }
+        }
     public function accept_answer(){
         $this->load->model('question_model');
         $data = $this->input->post('data');

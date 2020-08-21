@@ -18,7 +18,7 @@
         <div class="col-md-1 col-xs-1">
             <div>
                 <img id="vote_up_arrow" class="check_login" src="<?php echo base_url('images/angle-up.svg');?>">
-                <span id="q_votes_counter"></span>
+                <span id="q_votes_counter"><?php echo $question->votes; ?></span>
                 <img id="vote_down_arrow" class="check_login" src="<?php echo base_url('images/angle-down-solid.svg');?>">
             </div>
         </div>
@@ -65,6 +65,7 @@
                             <span id="delete_comment" style="display:none" class="on_hover check_login">مسح</span>
                             <input type="hidden" class="comment_id" value="<?php echo $comment->id;?>">
                             <input type="hidden" value="<?php echo $comment->commentor;?>">
+                            <div class="" id="delete_comment_went_wrong" style="display:none;margin-right: 10px;color:red">حدث خطأ ما حاول مرة اخري!</div> 
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -73,8 +74,9 @@
     </div>
     <br><br>
         <h3 class="text-right">اجوبة: <span><?php echo sizeof($answers);?></span></h3>
+        <?php foreach($answers as $answer):?>
         <div class="row">
-            <?php foreach($answers as $answer):?>
+            <div class="col-md-1"></div>
             <div class="col-md-1 col-xs-1">
                 <input type="hidden" value="<?php echo $answer->answerer;?>">
                    <img id="answer_vote_up_arrow" class="check_login" src="<?php echo base_url('images/angle-up.svg');?>">
@@ -87,14 +89,15 @@
                    if($answered == 1){echo "<input type='hidden' class='accepted_answer' value='".$answered."'>";}
                    ?>  
             </div>
-            <div class="col-md-11 col-xs-11">
+            <div class="col-md-9 col-xs-8">
                 <div><?php echo $answer->body;?></div>
                 <div class="row text-right" style="margin-bottom: 15px;">
                     بواسطة <a class="mr-md-2 ml-md-2" href="<?php echo base_url('main/user/').$answer->answerer_id*62488426;?>"><?php echo $answer->answerer_username;?></a> - 
                     <span class="mr-md-2"><?php echo " قبل ".posted_since($answer->at);?></span> 
-                    <input type="hidden" value="<?php echo $answer->answerer;?>">
-                    <span class="delete_answer mr-md-2 on_hover check_login" style="display:none">مسح</span>
-                    <input type="hidden" value="<?php echo $answer->id;?>"> 
+                    <input type="hidden" value="<?php echo $answer->answerer;?>">  
+                    <span class="delete_answer mr-md-2 on_hover check_login" style="display:none"> - مسح</span> 
+                    <input type="hidden" value="<?php echo $answer->id;?>">
+                    <div class="float-right" id="delete_answer_went_wrong" style="display:none;margin-right: 10px;color:red">حدث خطأ ما حاول مرة اخري!</div> 
                 </div>
                 <div class="row text-right">
                     <span class="on_hover check_login" id="answer_comment_button">اضف تعليق</span>
@@ -117,13 +120,21 @@
                     <input type="hidden" class="comment_id" value="<?php echo $comment->id;?>">
                     <input type="hidden" value="<?php echo $comment->commentor;?>">
                     <input type="hidden" value="<?php echo $comment->answer_id;?>">
+                    <div class="" id="delete_answer_comment_went_wrong" style="display:none;margin-right: 10px;color:red">حدث خطأ ما حاول مرة اخري!</div> 
                 </div>
                 <?php endforeach; ?>
             </div>
-            <?php endforeach;?>
             <br><br>
-                <textarea id="answer_textarea"></textarea><br>
-                <button id="answer_button" name="answer_button" class="btn btn-primary btn-lg btn-block check_login">جاوب</button>
+        </div>
+    </div>
+    <?php endforeach;?>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-9">
+            <textarea id="answer_textarea"></textarea><br>
+            <button id="answer_button" class="btn btn-primary btn-lg btn-block check_login">جاوب</button>
+            <div class="float-right" id="went_wrong" style="display:none;margin-top: 10px;">حدث خطأ ما حاول مرة اخري!</div>
+            <div class="float-right" id="empty_feild" style="display:none;margin-top: 10px;">الرجاء اضافة اجابة</div>
         </div>
     </div>
 </div> 
@@ -140,7 +151,7 @@ var owner = '';
 var data  = [];
 var views_count=0;
 var a_insert_id = 0;
-load_votes();
+// load_votes();
 show_q_edit_delete();
 show_accepted_check_icon();
 //////////////////////comment start
@@ -161,7 +172,11 @@ $("body").on("click","#submit_comment",function(){
             async:false,
             data:{data:data},
             success:function(result){
-             if(result == "commented"){location.reload();}
+             if(result == "commented"){
+                 location.reload();
+                 }else{
+                     alert('something went wrong');
+                 }
             }
          });
         }
@@ -186,7 +201,7 @@ $('.comment_id').each(function(){
             $(this).prev().css('display','inline-block');
         }
     });
-    function delete_comment(comment_id){
+    function delete_comment(comment_id,q_id){
        $.ajax({
             url:"<?php echo base_url();?>main/delete_comment",
             method:'POST',
@@ -194,15 +209,22 @@ $('.comment_id').each(function(){
             data:{comment_id:comment_id},
             async:false,
             success:function(response){
+                if(response == 'not'){
+                    $('#delete_comment_went_wrong').css('display','block');
+                    $("#delete_comment_went_wrong").delay(4000).hide(0);
+                }else{
+                    location.reload();
+                }
             }
         });  
     }
     $('body').on('dblclick','#delete_comment',function(){
         var id = $(this).next().val();
+        var q_id = $('#q_id');
         var c_owner = $(this).prev().val();
         if(c_owner != user){alert('not urs to delete');return;}
-        delete_comment(id);
-        location.reload();
+        delete_comment(id,q_id);
+        // location.reload();
         owner = '';
     });
 //////////////////////comment end
@@ -212,8 +234,8 @@ $('body').on("dblclick","#delete_question",function(){
     var q_owner = $(this).prev().val();
     if(q_owner != user){alert('not urs to delete');return;}
     delete_question();
-    alert('deleted');
-    window.location="<?php echo base_url('main/home');?>";
+    // alert('deleted');
+    // window.location="<?php echo base_url('main/home');?>";
 });
 $('body').on('click','#edit_question',function(e){
      var q_owner = $(this).prev().val();
@@ -247,21 +269,8 @@ function check_if_owner(){
     }
 });    
      return owner;
-}
-function get_questions_views(id){
-     $.ajax({
-    url:"<?php echo base_url();?>main/get_questions_views",
-    method:'POST',
-    dataType:'json',
-    data:{id:id},
-    async:false,
-    success:function(response){
-        views_count = response;
-    }
-});
-    return views_count;
-}
-    get_questions_views(q_id);
+} 
+
 function delete_question(){
  $.ajax({
     url:"<?php echo base_url();?>main/delete_question",
@@ -269,7 +278,12 @@ function delete_question(){
     dataType:'json',
     data:{q_id:q_id},
     async:false,
-    success:function(response){
+    success:function(response){console.log(response);
+        if(response = 'deleted'){
+            window.location = '<?php echo base_url("main/home");?>';
+        }else{
+            alert('something went wrong');
+        }
     }
 });
 }   
@@ -284,8 +298,8 @@ $('body').on("click",'#vote_up_arrow',function(){
     has_voted();
     if(voted == 'voted'){alert('already voted!');return;}
     else if(voted == 'not voted'){
-        add_vote('up',1);
-        load_votes();
+        add_vote(1);
+        // load_votes();
     }  
 });
 $('body').on("click",'#vote_down_arrow',function(){
@@ -295,8 +309,8 @@ $('body').on("click",'#vote_down_arrow',function(){
     has_voted();
     if(voted == 'voted'){alert('already voted!');return;}
     else if(voted == 'not voted'){
-        add_vote('down',-1,);
-        load_votes();
+        add_vote(-1,);
+        // load_votes();
     }  
 });
 ////////      voting end
@@ -305,17 +319,17 @@ $('body').on("click",'#vote_down_arrow',function(){
     
     
 //VOTING FUNCTIONS START
-function load_votes(){
- $.ajax({
-    url:"<?php echo base_url();?>main/load_votes",
-    method:'POST',
-    dataType:'json',
-    data:{q_id:q_id},
-    success:function(response){
-        document.getElementById('q_votes_counter').innerHTML=response['votes'];
-    }
-});
-}
+// function load_votes(){
+//  $.ajax({
+//     url:"<?php echo base_url();?>main/load_votes",
+//     method:'POST',
+//     dataType:'json',
+//     data:{q_id:q_id},
+//     success:function(response){
+//         document.getElementById('q_votes_counter').innerHTML=response['votes'];
+//     }
+// });
+// }
     
 function has_voted(){
  $.ajax({
@@ -330,10 +344,9 @@ function has_voted(){
 });
     return voted;
 }
-function add_vote(x,y){
+function add_vote(x){
     data.push(q_id);
     data.push(x);
-    data.push(y);
     data.push(qu_owner);
  $.ajax({
     url:"<?php echo base_url();?>main/add_vote",
@@ -342,6 +355,9 @@ function add_vote(x,y){
     data:{data:data},
     async:false,
     success:function(response){
+        if(response == "not"){
+            alert("something went wrong");
+        }
     }
 });
 }
@@ -381,7 +397,12 @@ function add_answer(){
         data:{answer_data:answer_data},
         async:false,
         success:function(response){
-            a_insert_id=response;
+            if(response = 'true'){
+                location.reload();
+            }else{
+                $('#went_wrong').css('display','block');
+                $("#went_wrong").delay(4000).hide(0);
+            }
         }
 });
 }    
@@ -395,16 +416,25 @@ function delete_answer(id,q_id){
     data:{data:data},
     async:false,
     success:function(response){
+        if(response == 'deleted'){
+                location.reload();
+            }else{
+                $('#delete_answer_went_wrong').css('display','block');
+                $("#delete_answer_went_wrong").delay(4000).hide(0);
+            }
     }
 });    
 }
 $('body').on("click","#answer_button",function(){    
-if(!tinyMCE.get('answer_textarea').getContent()){alert('put an answer first');return;}
+if(!tinyMCE.get('answer_textarea').getContent()){
+    $('#empty_feild').css('display','block');
+    $("#empty_feild").delay(4000).hide(0);
+    return;
+    }
 check_user_answered();
 if(answered == 'answered'){alert('already answered');return;}
 answered='';
 add_answer();
-//location.reload();
 }); 
 $('body').on('dblclick','.delete_answer',function(){
     var id = $(this).next().val();
@@ -441,8 +471,12 @@ $("body").on("click","#submit_answer_comment",function(){
             dataType:'json',
             async:false,
             data:{data:data},
-            success:function(data){
-             if(data == "added"){location.reload();}else{alert('something went wrong');}
+            success:function(data){console.log(data);
+            //  if(data == "added"){
+            //      location.reload();
+            //     }else{
+            //         alert('something went wrong');
+            //     }
             }
         });
     }
@@ -465,8 +499,13 @@ $('body').on('dblclick','.delete_answer_comment',function(){
     data:{data:data},
     async:false,
     success:function(response){
-        if(response =="deleted"){location.reload();}else{alert('something went wrong');}
-    }
+        if(response == "deleted"){
+            location.reload();
+            }else{
+                $('#delete_answer_comment_went_wrong').css('display','block');
+                $("#delete_answer_comment_went_wrong").delay(4000).hide(0);      
+            }
+        }
 });    
 }
 var comment = [];
@@ -546,7 +585,12 @@ function answer_update_votes(answer_data){
     data:{answer_data:answer_data},
     async:false,
     success:function(response){
-        document.getElementById('answer_votes_counter').innerHTML=response['votes'];
+        if(response == 'ok'){
+            location.reload();
+        }else{
+            alert('something went wrong');
+        }
+
     }
 });
 }
@@ -555,7 +599,7 @@ function answer_update_votes(answer_data){
     
 ////////////////////answer voting start
 $('body').on('click','#answer_vote_up_arrow',function(){
-    var answer_id = $(this).next().next().next().val();
+    var answer_id = $(this).next().next().val();
     var answerer= $(this).prev().val();
     check_answer_owner(answer_id);
     if(owner == 'owner'){alert('cant vote ur own answer');return;}
@@ -569,7 +613,7 @@ $('body').on('click','#answer_vote_up_arrow',function(){
     answer_data.push(q_id);
     answer_data.push(answerer);
     answer_update_votes(answer_data);
-    location.reload();
+    // location.reload();
 });
 $('body').on('click','#answer_vote_down_arrow',function(){
     var answer_id = $(this).prev().val();
@@ -590,7 +634,7 @@ $('body').on('click','#answer_vote_down_arrow',function(){
     answer_data.push(q_id);
     answer_data.push(answerer);
     answer_update_votes(answer_data);
-    location.reload();
+    // location.reload();
 });
 ////////////////////answer voting end 
     

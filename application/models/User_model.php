@@ -18,10 +18,11 @@ public function check_login_email($email){
      $username = $user_data[0];
      $password = $user_data[1];
      $email = $user_data[2];
-     $data = array('username'=>$username,'password'=>md5($password),'email'=>$email,'activated'=>'0','token'=>$token,'profile_pic'=>'defult.png');
+     $data = array('username'=>$username,'password'=>md5($password),'email'=>$email,'activated'=>'0','token'=>$token,'profile_pic'=>'default.png');
      $this->db->insert('users',$data);
      $id=$this->db->insert_id();
-     $this->session->set_userdata('user',$username);
+     $this->session->set_userdata('username',$username);
+     $this->session->set_userdata('user',$email);
      $this->session->set_userdata('user_id',$id);
      return true;
      }
@@ -85,7 +86,7 @@ public function create_social_account($data){
        $sql = ("SELECT * FROM users WHERE email='$email' AND password='$password'");
        if($this->db->query($sql)->num_rows() > 0){
            $user = $this->db->query($sql)->row()->username;
-           $user = $this->db->query($sql)->row()->email;
+           $email = $this->db->query($sql)->row()->email;
            $id = $this->db->query($sql)->row()->id;
            $this->session->set_userdata('username',$user);
            $this->session->set_userdata('user',$email);

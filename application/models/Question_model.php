@@ -32,10 +32,12 @@ class Question_model extends CI_Model{
         $user=$this->session->userdata('user');
         $user_id=$this->session->userdata('user_id');
         $username=$this->session->userdata('username');
-        $data=array('title'=>$title,'tags'=>$tags,'body'=>$content,'asker'=>$user,'asker_id'=>$user_id,'asker_username'=>$username);
-        $this->db->insert('questions',$data);
-        $id = $this->db->insert_id();
-        return $id;
+        $sql=("insert into questions(title,tags,body,asker,asker_id,asker_username) values('$title','$tags','$content','$user','$user_id','$username')");
+        if($this->db->query($sql)){
+            return $this->db->insert_id();
+        }else{
+            return false;
+        }
     }
     public function get_question($id){
         $sql=("SELECT * FROM questions WHERE id='$id' ");
@@ -119,9 +121,11 @@ class Question_model extends CI_Model{
         $username=$this->session->userdata('username');
         $user_id=$this->session->userdata('user_id');
         $sql=("INSERT INTO comments(question_id,comment,commentor,commentor_username,commentor_id) VALUES('$q_id','$comment','$user','$username','$user_id')");
-        $this->db->query($sql);
-        return $this->db->insert_id();
-        return true;
+        if($this->db->query($sql)){
+            return $this->db->insert_id();
+        }else{
+            return false;
+        }
     }
     public function add_answer_comment($data){
         $q_id=$data[0];
@@ -133,29 +137,50 @@ class Question_model extends CI_Model{
         $username=$this->session->userdata('username');
         $user_id=$this->session->userdata('user_id');
         $sql=("INSERT INTO answers_comments(question_id,comment,commentor,answer_id,commentor_username,commentor_id) VALUES('$q_id','$comment','$user','$answer_id','$username','$user_id')");
-        $this->db->query($sql);
-        return $this->db->insert_id();
+        if($this->db->query($sql) == true){
+            return $this->db->insert_id();
+        }else{
+            return false;
+        }
     }
     public function load_votes($q_id){
         $sql=("SELECT votes FROM questions WHERE id='$q_id'");
         return $query=$this->db->query($sql)->row();
     }
-        public function has_voted($q_id){
-        $sql=("SELECT voter FROM votes WHERE question_id='$q_id'");
+    public function has_voted($q_id){
+        $user=$this->session->userdata('user');
+        $sql=("SELECT voter FROM votes WHERE question_id='$q_id' and voter='$user'");
         $query=$this->db->query($sql);
         if($query->num_rows() > 0){
             return true;
-        }else{return false;}
+        }else{
+            return false;
+        }
     }
     public function add_vote($data){
-        $q_id=$data[0];
-        $down_up=$data[1];
-        $vote=$data[2];
+        $q_owner = $data[2];
+        $link = $data[0]*62488426;
+        $section = $data[0];
+        $q_id = $data[0];
+        $vote=$data[1];
         $user=$this->session->userdata('user');
-        $sql_q=("UPDATE questions SET votes=(votes+'$vote') WHERE id='$q_id' ");
-        $sql_v=("INSERT INTO votes(question_id,voter,down_up) VALUES('$q_id','$user','$down_up')");
-        $query=$this->db->query($sql_v);
-        $query=$this->db->query($sql_q);
+        $sql1=("UPDATE questions SET votes=(votes+'$vote') WHERE id='$q_id' ");
+        $sql2=("INSERT INTO votes(question_id,voter,down_up) VALUES('$q_id','$user','$vote')");
+        $sql3=("INSERT INTO points(count,user,type_,question_id) VALUES(5,'$user','vote_q','$q_id')");
+        $sql4=("INSERT INTO points(count,user,type_,question_id) VALUES(5,'$q_owner','vote_own_q','$q_id')");
+        $this->db->trans_Start();
+        $this->db->query($sql1);
+        $this->db->query($sql2);
+        $id = $this->db->insert_id();
+        $this->db->query($sql3);
+        $this->db->query($sql4);
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
+            return $id;
+        }
     }
     public function check_q_owner($q_id){
         $user = $this->session->userdata('user');
@@ -169,24 +194,43 @@ class Question_model extends CI_Model{
         $user = $this->session->userdata('user');
         $sql=("DELETE FROM questions WHERE id='$q_id' ");
         $sql2=("DELETE FROM answers WHERE question_id='$q_id'");
-//        $sql3=("DELETE FROM votes WHERE question_id='$q_id'");
+        $sql3=("DELETE FROM votes WHERE question_id='$q_id'");
         $sql4=("DELETE FROM comments WHERE question_id='$q_id'");
-//        $sql5=("DELETE FROM answer_votes WHERE question_id='$q_id'");
+        $sql5=("DELETE FROM answer_votes WHERE question_id='$q_id'");
         $sql6=("DELETE FROM answers_comments WHERE question_id='$q_id'");
-        $sql7=("UPDATE users SET points=(points-5) WHERE username='$user'");
-        $this->db->query($sql4);
+        $sql7=("UPDATE users SET points=(points-5) WHERE email='$user'");
+        // $sql8=("DELETE FROM points WHERE question_id='$q_id'");
+        $sql8=("DELETE FROM notifications WHERE question_id='$q_id'");
+        $this->db->trans_Start();
         $this->db->query($sql);
         $this->db->query($sql2);
-//        $this->db->query($sql3);
-//        $this->db->query($sql5);
+        $this->db->query($sql3);
+        $this->db->query($sql4);
+        $this->db->query($sql5);
         $this->db->query($sql6);
         $this->db->query($sql7);
-        return true;
+        $this->db->query($sql8);
+        // $this->db->query($sql9);
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
+            return true;
+        }
     }
-    public function delete_comment($comment_id){
-        $sql=("DELETE FROM comments WHERE id='$comment_id' ");
-        $query=$this->db->query($sql);
+    public function delete_comment($comment_id,$q_id){
+        $sql1=("DELETE FROM comments WHERE id='$comment_id' ");
+        $sql2=("DELETE FROM notifications WHERE question_id='$q_id' and type='commented' ");
+        $this->db->query($sql1);
+        $this->db->query($sql2);
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
         return true;
+        }
     }
     public function delete_answer($data){
         $answer_id=$data[0];
@@ -195,18 +239,35 @@ class Question_model extends CI_Model{
         $sql2=("UPDATE questions SET answers=(answers-1) WHERE id='$q_id'");
         $sql3=("DELETE FROM answer_votes WHERE question_id='$q_id'");
         $sql4=("DELETE FROM answers_comments WHERE question_id='$q_id'");
+        $sql5=("DELETE FROM notifications WHERE answer_id='$answer_id' ");
+        $this->db->trans_Start();
         $this->db->query($sql);
         $this->db->query($sql2);
         $this->db->query($sql3);
         $this->db->query($sql4);
-        return true;
+        $this->db->query($sql5);
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
+            return true;
+        }
     }    
     public function delete_answer_comment($data){
         $answer_id=$data[0];
         $comment_id=$data[1];
-        $sql=("DELETE FROM answers_comments WHERE id='$comment_id' AND answer_id='$answer_id'");
-        $this->db->query($sql);
-        return true;
+        $sql1=("DELETE FROM answers_comments WHERE id='$comment_id' AND answer_id='$answer_id'");
+        $sql2=("DELETE FROM notifications WHERE delete_id='$comment_id' AND answer_id='$answer_id' and type='answer_commented'");
+        $this->db->query($sql1);
+        $this->db->query($sql2);
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
+            return true;
+        }
     }
     public function get_pre_edit_question($id){
         $sql=("SELECT body,tags,title FROM questions WHERE id='$id' ");
@@ -237,12 +298,19 @@ class Question_model extends CI_Model{
         $user = $this->session->userdata('user');
         $username = $this->session->userdata('username');
         $user_id = $this->session->userdata('user_id');
-        $sql=("INSERT INTO answers(body,question_id,answerer,tags,answerer_id,answerer_username) VALUES(".$this->db->escape($answer_body).",'$q_id','$user','$tags','$user_id','$username')");
-        $sql2=("UPDATE questions SET answers=(answers+1) WHERE id='$q_id'");
+        $sql1=("UPDATE questions SET answers=(answers+1) WHERE id='$q_id'");
+        $sql2=("INSERT INTO answers(body,question_id,answerer,tags,answerer_id,answerer_username) VALUES(".$this->db->escape($answer_body).",'$q_id','$user','$tags','$user_id','$username')");
+        $this->db->trans_Start();
+        $this->db->query($sql1);
         $this->db->query($sql2);
-        $this->db->query($sql);
         $id = $this->db->insert_id();
-        return $id;
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
+            return $id;
+    }
     }
     public function get_answers($id){
         $sql=("SELECT * FROM answers WHERE question_id='$id' ORDER BY accepted DESC,votes DESC");
@@ -280,13 +348,18 @@ class Question_model extends CI_Model{
             return true;
         }else{return false;}
     }
-    public function answer_update_votes($answer_id,$vote,$q_id,$down_up){
+    public function answer_update_votes_and_points($answer_id,$vote,$q_id,$down_up,$a_owner){
         $user = $this->session->userdata('user');
-        $sql_vote_count=("UPDATE answers SET votes=(votes+'$vote') WHERE id='$answer_id' ");
-        $sql_votes=("INSERT INTO answer_votes(voter,answer_id,down_up,at,question_id) VALUES('$user','$answer_id','$down_up','$q_id')");
-        $this->db->query($sql_vote_count);
-        $this->db->query($sql_votes);
-        return true;
+        $this->db->trans_Start();
+        $this->db->query("UPDATE answers SET votes=(votes+'$vote') WHERE id='$answer_id' ");
+        $this->db->query("INSERT INTO answer_votes(voter,answer_id,down_up,question_id) VALUES('$user','$answer_id','$down_up','$q_id')");
+        $this->db->trans_Complete();
+        if($this->db->trans_Status() === FALSE){
+            $this->db->transRollback();
+            return false;
+        }else{
+            return true;
+    }
     }
     public function accept_answer($data){
         $answer_id=$data[0];
@@ -302,8 +375,11 @@ class Question_model extends CI_Model{
         $user = $this->session->userdata('user');
         $sql=("INSERT INTO points(count,user,type,question_id) VALUES(5,'$user','vote_q','$q_id')");
         $sql2=("INSERT INTO points(count,user,type,question_id) VALUES(5,'$q_owner','vote_own_q','$q_id')");
-        $this->db->query($sql);
-        $this->db->query($sql2);
+        if(!$this->db->query($sql) || !$this->db->query($sql2)){
+            return false;
+        }else{
+            return true;
+        }
     }
         public function add_a_vote_points($answer_id,$q_id,$a_owner){
         $user = $this->session->userdata('user');
@@ -313,7 +389,7 @@ class Question_model extends CI_Model{
         $this->db->query($sql2);
     }
     
-    public function make_notifications($from,$type,$section,$q_id,$link,$delete_id){
+public function make_notifications($from,$type,$section,$q_id,$link,$delete_id,$answer_id=null){
         $notify_to=("SELECT DISTINCT asker FROM questions
         WHERE id='$q_id'
         UNION ALL
@@ -331,7 +407,7 @@ class Question_model extends CI_Model{
         for($x=0;$x<sizeof($users);$x++){
             $user=$users[$x];
             if($user != $from){   
-            $sql=("INSERT INTO notifications(to_,from_,type,link_,section,question_id,delete_id) VALUES('$user','$from','$type','$link','$section','$q_id','$delete_id')");
+            $sql=("INSERT INTO notifications(to_,from_,type,link_,section,question_id,delete_id,answer_id) VALUES('$user','$from','$type','$link','$section','$q_id','$delete_id','$answer_id')");
             if($this->db->query($sql)){
                 return true;
             }else{

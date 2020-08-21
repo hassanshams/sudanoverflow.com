@@ -23,7 +23,7 @@
             <input type="password" id="confirm_password" class="form-control" placeholder="تأكيد كلمة المرور">
           </div>
           <div class="float-right" id="empty_feild" style="display:none;color:red;">الرجاء ملئ كل الحقول!</div>
-          <div class="float-right" id="used_email" style="display:none;color:red;">البريد مستخدم مسبقا!</div>
+          <div class="float-right" id="used_email" style="display:none;color:red;">البريد مستخدم مسبقا!</div><br>
           <div class="float-right" id="password_not_match" style="display:none;color:red;">كلمة المرور غير مطابقة</div>
           <div class="float-right" id="good_to_go" style="display:none;color:red;">تم انشاء حسابك بنجاح .. قمنا بارسال رابط تنشيط الي بريدك</div>
           <div class="float-right" id="db_error" style="display:none;color:red;">حدث خطا ما الرجاء المحاولة مرة اخري !</div>
@@ -71,6 +71,7 @@ $(document).ready(function(){
             console.log(data);
             if(data=='used'){
               $('#used_email').css({'display':'block','margin-bottom':'10px'});
+              $("#used_email").delay(3000).hide(0);
               mail_used=true;
             }
           }

@@ -23,11 +23,12 @@
                 </div>
                 <br>
                 <div id="p_bio" class="text-justify"><?php echo $user_info[0]->bio; ?></div>
-                <div><a class="check_login" id="p_edit_profile" href="<?php echo base_url('main/edit_profile'); ?>">تعديل</a></div>
+                <div><a class="check_login" id="p_edit_profile" href="<?php echo base_url('main/edit_profile'); ?>" style="display:none">تعديل</a></div>
             </div>
         </div>
     </div>
-    <!-- <?php echo "<pre>";print_r($user_activity);echo "<pre>";?> -->
+    <input hidden id="xex" value="<?php echo md5($user_info[0]->email);?>">
+    <input hidden id="xux" value="<?php echo md5($this->session->userdata('user'));?>">
     <br>
     <h5>اسئلة:</h5>
     <div class="row">
@@ -107,3 +108,15 @@
         <?php endforeach;?>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        $('body').on('click','#p_edit_profile',function(e){
+            if($('#xux').val() != $('#xex').val()){
+                return false;
+         }
+        });
+            if($('#xux').val() == $('#xex').val()){
+                $('#p_edit_profile').css('display','block');
+         }
+    });
+</script>
